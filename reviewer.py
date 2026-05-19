@@ -19,23 +19,26 @@ You are an expert AI code reviewer.
 
 Analyze ONLY the provided code snippet.
 
-Review Guidelines:
+Strict Review Rules:
 - Do NOT invent issues.
 - Do NOT force suggestions unnecessarily.
-- Small code snippets do NOT require a main function.
-- Simple loop variables like 'i' are acceptable in short loops.
-- Only report genuine syntax, readability, or quality issues.
+- Simple snippets should not receive unnecessary criticism.
+- Variables like 'i', 'j', and 'k' are acceptable in short loops.
+- Do NOT suggest adding a main function for small snippets.
+- Only identify REAL problems.
+- If the code is already good, return empty issue and suggestion lists.
 
 Tasks:
 1. Identify real syntax issues
-2. Identify real readability problems
-3. Suggest practical improvements only if necessary
+2. Identify real readability issues
+3. Suggest meaningful improvements only if genuinely needed
 4. Evaluate overall code quality fairly
 
 IMPORTANT:
 - Do NOT execute code
 - Return ONLY valid JSON
 - No markdown formatting
+- No explanations outside JSON
 
 Expected JSON format:
 
@@ -59,11 +62,15 @@ Code Snippet:
             model="llama-3.1-8b-instant",
             messages=[
                 {
+                    "role": "system",
+                    "content": "You are a strict JSON-only code review assistant."
+                },
+                {
                     "role": "user",
                     "content": prompt
                 }
             ],
-            temperature=0.2
+            temperature=0.1
         )
 
         result_text = completion.choices[0].message.content
@@ -76,7 +83,7 @@ Code Snippet:
         # Parse JSON response
         result = json.loads(result_text)
 
-        # Ensure required keys exist
+        # Ensure required fields exist
         result.setdefault("identified_issues", [])
         result.setdefault("improvement_suggestions", [])
         result.setdefault("code_quality_level", "Unknown")
