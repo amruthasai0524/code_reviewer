@@ -1,7 +1,7 @@
 import os
 import json
-from dotenv import load_dotenv
 from groq import Groq
+from dotenv import load_dotenv
 
 # Load environment variables
 load_dotenv()
@@ -22,30 +22,21 @@ Analyze ONLY the provided code snippet.
 Strict Review Rules:
 - Do NOT invent issues.
 - Do NOT force suggestions unnecessarily.
-- Simple snippets should not receive unnecessary criticism.
-- Variables like 'i', 'j', and 'k' are acceptable in short loops.
-- Do NOT suggest adding a main function for small snippets.
-- Only identify REAL problems.
-- If the code is already good, return empty issue and suggestion lists.
-
-Tasks:
-1. Identify real syntax issues
-2. Identify real readability issues
-3. Suggest meaningful improvements only if genuinely needed
-4. Evaluate overall code quality fairly
+- Variables like 'i' are acceptable in short loops.
+- Only identify REAL syntax or readability issues.
+- If code is already good, return empty issue and suggestion lists.
 
 IMPORTANT:
 - Do NOT execute code
 - Return ONLY valid JSON
 - No markdown formatting
-- No explanations outside JSON
 
 Expected JSON format:
 
 {{
   "identified_issues": [],
   "improvement_suggestions": [],
-  "code_quality_level": "High/Medium/Low",
+  "code_quality_level": "",
   "review_summary": ""
 }}
 
@@ -63,7 +54,7 @@ Code Snippet:
             messages=[
                 {
                     "role": "system",
-                    "content": "You are a strict JSON-only code review assistant."
+                    "content": "You are a JSON-only AI code review assistant."
                 },
                 {
                     "role": "user",
@@ -75,19 +66,19 @@ Code Snippet:
 
         result_text = completion.choices[0].message.content
 
-        # Remove markdown formatting if present
+        # Clean markdown formatting
         result_text = result_text.replace("```json", "")
         result_text = result_text.replace("```", "")
         result_text = result_text.strip()
 
-        # Parse JSON response
+        # Parse JSON
         result = json.loads(result_text)
 
-        # Ensure required fields exist
+        # Ensure required fields
         result.setdefault("identified_issues", [])
         result.setdefault("improvement_suggestions", [])
         result.setdefault("code_quality_level", "Unknown")
-        result.setdefault("review_summary", "No summary provided.")
+        result.setdefault("review_summary", "No summary available.")
 
         return result
 
@@ -98,7 +89,7 @@ Code Snippet:
                 "Unable to analyze code properly."
             ],
             "improvement_suggestions": [
-                "Check API key, internet connection, or model configuration."
+                "Check API key or model configuration."
             ],
             "code_quality_level": "Unknown",
             "review_summary": str(e)
